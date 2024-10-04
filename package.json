@@ -1,35 +1,15 @@
 {
-  "name": "lab03",
+  "name": "week05_lab_execrcise05",
   "version": "1.0.0",
-  "description": "Lab 03",
+  "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon index.js"
+    "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [
-    "sample",
-    "js",
-    "html",
-    "node",
-    "express",
-    "framework",
-    "sinatra",
-    "web",
-    "rest",
-    "restful",
-    "router",
-    "app",
-    "api"
-  ],
-  "author": {
-    "name": "Pritesh Patel",
-    "email": "sample@gb.ca"
-  },
-  "homepage": "https://nodejs.org/",
+  "keywords": [],
+  "author": "Pritesh Patel - Exercise Lab 05",
   "license": "ISC",
-  "dependencies": {},
-  "devDependencies": {
-    "nodemon": "^2.0.4"
+  "dependencies": {
+    "express": "^4.17.1"
   }
 }

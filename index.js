@@ -1,53 +1,67 @@
-// index.js
+const express = require('express');
+const fs = require('fs');
+const app = express();
+const router = express.Router();
 
-const http = require("http");
-const employees = require("./employee");  // Import employee data
 
-console.log("Lab 03 - NodeJs");
-
-// Define the port
-const port = process.env.PORT || 8081;
-
-// Create Web Server using CORE API
-const server = http.createServer((req, res) => {
-    if (req.method !== 'GET') {
-        res.writeHead(405, { "Content-Type": "application/json" });
-        res.end(`{"error": "${http.STATUS_CODES[405]}"}`);
-    } else {
-        if (req.url === '/') {
-            res.writeHead(200, { "Content-Type": "text/html" });
-            res.end("<h1>Welcome to Lab Exercise 03</h1>");
-        } 
-        
-        else if (req.url === '/employee') {
-            res.writeHead(200, { "Content-Type": "application/json" });
-            res.end(JSON.stringify(employees));  // Send the entire employee list in JSON format
-        } 
-        
-        else if (req.url === '/employee/names') {
-            // Map to get full names and sort alphabetically
-            const names = employees
-                .map(emp => `${emp.firstName} ${emp.lastName}`)
-                .sort();
-            res.writeHead(200, { "Content-Type": "application/json" });
-            res.end(JSON.stringify(names));
-        } 
-        
-        else if (req.url === '/employee/totalsalary') {
-            // Calculate the total salary of all employees
-            const totalSalary = employees.reduce((sum, emp) => sum + emp.Salary, 0);
-            res.writeHead(200, { "Content-Type": "application/json" });
-            res.end(JSON.stringify({ "total_salary": totalSalary }));
-        } 
-        
-        else {
-            res.writeHead(404, { "Content-Type": "application/json" });
-            res.end(`{"error": "${http.STATUS_CODES[404]}"}`);
-        }
-    }
+app.use(express.json()); 
+router.get('/home', (req, res) => {
+  res.sendFile(__dirname + '/home.html');
 });
 
-// Start the server and listen to the defined port
-server.listen(port, () => {
-    console.log(`Server listening on port ${port}`);
+router.get('/profile', (req, res) => {
+  fs.readFile('user.json', 'utf8', (err, data) => {
+    if (err) {
+      return res.status(500).json({ error: 'Failed to read user data' });
+    }
+    res.json(JSON.parse(data));
+  });
+});
+
+router.post('/login', (req, res) => {
+  const { username, password } = req.body;
+
+  fs.readFile('user.json', 'utf8', (err, data) => {
+    if (err) {
+      return res.status(500).json({ error: 'Failed to read user data' });
+    }
+
+    const user = JSON.parse(data);
+    
+    if (user.username !== username) {
+      return res.json({
+        status: false,
+        message: "User Name is invalid"
+      });
+    }
+
+    if (user.password !== password) {
+      return res.json({
+        status: false,
+        message: "Password is invalid"
+      });
+    }
+
+    return res.json({
+      status: true,
+      message: "User Is valid"
+    });
+  });
+});
+
+router.get('/logout/:username', (req, res) => {
+  const { username } = req.params;
+  res.send(`<b>${username} successfully logged out.</b>`);
+});
+
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).send('Server Error');
+});
+
+app.use('/', router);
+
+const PORT = process.env.PORT || 8081;
+app.listen(PORT, () => {
+  console.log('Web Server is listening at port ' + PORT);
 });
